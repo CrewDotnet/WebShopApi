@@ -7,6 +7,6 @@ namespace WebShopApi.Models.RequestModels
 {
     public class CustomerRequest
     {
-        
+        public required string Name {get; set;}
     }
 }

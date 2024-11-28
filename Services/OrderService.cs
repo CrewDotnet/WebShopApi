@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using WebShopApi.Models;
 using WebShopApi.Repositories;
 
@@ -10,10 +11,12 @@ namespace WebShopApi.Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _repository;
+        private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository repository)
+        public OrderService(IOrderRepository repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<Order>> GetAllAsync()

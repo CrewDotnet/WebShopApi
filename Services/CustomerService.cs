@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using WebShopApi.Models;
+using WebShopApi.Models.RequestModels;
 using WebShopApi.Repositories;
 
 namespace WebShopApi.Services
@@ -10,30 +12,38 @@ namespace WebShopApi.Services
     public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository _repository;
+        private readonly IMapper _mapper;
 
-        public CustomerService (ICustomerRepository repository)
+        public CustomerService (ICustomerRepository repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Customer>> GetAllAsync()
+        public async Task<IEnumerable<CustomerResponse>> GetAllAsync()
         {
-            return await _repository.GetAllAsync();
+            var items = await _repository.GetAllAsync();
+            return _mapper.Map<IEnumerable<CustomerResponse>>(items);
         }
 
-        public async Task<Customer?> GetByIdAsync(Guid id)
+        public async Task<CustomerResponse?> GetByIdAsync(Guid id)
         {
-            return await _repository.GetByIdAsync(id);
+            var item = await _repository.GetByIdAsync(id);
+            return _mapper.Map<CustomerResponse?>(item);
         }
 
-        public async Task AddAsync(Customer customer)
+        public async Task<Customer> AddAsync(CustomerRequest customerRequest)
         {
+            var customer = _mapper.Map<Customer>(customerRequest);
+            customer.Id = Guid.NewGuid();
             await _repository.AddAsync(customer);
+            return customer;
         }
 
-        public async Task<bool> UpdateAsync(Guid id, Customer customer)
+        public async Task<bool> UpdateAsync(Guid id, CustomerRequest customerRequest)
         {
-            customer.Id = id;
+            var customer = _mapper.Map<Customer>(customerRequest);
+            customer.Id = id; 
             return await _repository.UpdateAsync(customer);
         }
 
