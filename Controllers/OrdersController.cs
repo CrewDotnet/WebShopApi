@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebShopApi.Models;
+using WebShopApi.Models.RequestModels;
 using WebShopApi.Services;
 
 namespace WebShopApi.Controllers
@@ -20,42 +21,38 @@ namespace WebShopApi.Controllers
         }
         
         [HttpGet]
-        public async Task<ActionResult<OrderResponse>> GetOrders()
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
-            var items = await _service.GetAllAsync();
-            var response = new OrderResponse{
-                Orders = items.ToList()
-            };
-            return Ok(response);
+            var orders = await _service.GetAllAsync();
+            return Ok(orders);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(Guid id)
         {
-            var item = await _service.GetByIdAsync(id);
-            if (item == null)
+            var order = await _service.GetByIdAsync(id);
+            if (order == null)
             {
                 return NotFound();
             }
-            return Ok(item);
+            return Ok(order);
         }
 
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder(Guid id, Order order)
+        public async Task<IActionResult> PutOrder(Guid id, OrderRequest orderRequest)
         {
-            var updated = await _service.UpdateAsync(id, order);
+            var updated = await _service.UpdateAsync(id, orderRequest);
             if (!updated) return NotFound();
-
             return NoContent();
         }
 
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754   
         [HttpPost]
-        public async Task<ActionResult<Order>> PostOrder(Order order)
+        public async Task<ActionResult<Order>> PostOrder(OrderRequest orderRequest)
         {
-            await _service.AddAsync(order);
-            return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
+            var createdOrder = await _service.AddAsync(orderRequest);
+            return CreatedAtAction(nameof(GetOrder), new { id = createdOrder.Id }, createdOrder);
         }
 
         [HttpDelete("{id}")]

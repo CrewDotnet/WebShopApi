@@ -2,44 +2,63 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using WebShopApi.Models;
+using WebShopApi.Models.RequestModels;
 using WebShopApi.Repositories;
 
 namespace WebShopApi.Services
 {
     public class OrderService : IOrderService
     {
-        private readonly IOrderRepository _repository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IClothesRepository _itemRepository;
+        private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository repository)
+        public OrderService(IOrderRepository repository, IMapper mapper, IClothesRepository itemRepository)
         {
-            _repository = repository;
+            _orderRepository = repository;
+            _mapper = mapper;
+            _itemRepository = itemRepository;
         }
 
-        public async Task<IEnumerable<Order>> GetAllAsync()
+        public async Task<IEnumerable<OrderResponse>> GetAllAsync()
         {
-            return await _repository.GetAllAsync();
+            var items = await _orderRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<OrderResponse>>(items);
         }
 
-        public async Task<Order?> GetByIdAsync(Guid id)
+        public async Task<OrderResponse?> GetByIdAsync(Guid id)
         {
-            return await _repository.GetByIdAsync(id);
+            var item = await _orderRepository.GetByIdAsync(id);
+            return _mapper.Map<OrderResponse?>(item);
         }
 
-        public async Task AddAsync(Order order)
+        public async Task<Order> AddAsync(OrderRequest orderRequest)
         {
-            await _repository.AddAsync(order);
+            var order = _mapper.Map<Order>(orderRequest);
+            order.Id = Guid.NewGuid(); // Automatically generate ID
+
+            foreach (var clothesItemId in orderRequest.ClothesItemsId)
+            {
+                var clothesItem = await _itemRepository.GetByIdAsync(clothesItemId);
+                order.ClothesItems.Add(clothesItem);
+            }
+
+            await _orderRepository.AddAsync(order);
+            return order;
         }
 
-        public async Task<bool> UpdateAsync(Guid id, Order order)
+        public async Task<bool> UpdateAsync(Guid id, OrderRequest orderRequest)
         {
-            order.Id = id;
-            return await _repository.UpdateAsync(order);
+            var order = _mapper.Map<Order>(orderRequest);
+            order.Id = id; // Assign the existing ID for update
+            return await _orderRepository.UpdateAsync(order);
         }
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            return await _repository.DeleteAsync(id);
+            return await _orderRepository.DeleteAsync(id);
         }
     }
 }

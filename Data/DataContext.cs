@@ -29,13 +29,12 @@ namespace WebShopApi.Data
         public DbSet<ClothesType> ClothesTypes {get; set;} = null!;
         public DbSet<Customer> Customers {get; set;} = null!;
         public DbSet<Order> Orders {get; set;} = null!;
-        public DbSet<JoiningOrderClothesItem> JoiningOrderClothesItems { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ClothesItem>()
                 .HasOne(ci => ci.ClothesType)
-                .WithMany() // No navigation property in ClothesType
+                .WithMany(c => c.ClothesItems)
                 .HasForeignKey(ci => ci.ClothesTypeId)
                 .OnDelete(DeleteBehavior.Cascade); 
 
@@ -45,20 +44,10 @@ namespace WebShopApi.Data
                 .HasForeignKey(o => o.CustomerId)
                 .OnDelete(DeleteBehavior.SetNull); // If customer is deleted, keep the orders but set null for CustomerId
 
-            modelBuilder.Entity<JoiningOrderClothesItem>()
-                .HasKey(j => new { j.OrderId, j.ClothesItemId }); // Composite primary key
-
-            modelBuilder.Entity<JoiningOrderClothesItem>()
-                .HasOne(j => j.Order)
-                .WithMany(o => o.OrderClothesItems)
-                .HasForeignKey(j => j.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<JoiningOrderClothesItem>()
-                .HasOne(j => j.ClothesItem)
-                .WithMany(ci => ci.OrderClothesItems)
-                .HasForeignKey(j => j.ClothesItemId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // Many-to-many relationship between Order and ClothesItem
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.ClothesItems)
+                .WithMany(ci => ci.Orders);
         }
 
     }

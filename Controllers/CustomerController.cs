@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebShopApi.Models;
+using WebShopApi.Models.RequestModels;
 using WebShopApi.Services;
 
 namespace WebShopApi.Controllers
@@ -20,42 +21,38 @@ namespace WebShopApi.Controllers
         }
         
         [HttpGet]
-        public async Task<ActionResult<CustomerResponse>> GetCustomers()
+        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
-            var items = await _service.GetAllAsync();
-            var response = new CustomerResponse{
-                Customers = items.ToList()
-            };
-            return Ok(response);
+            var customers = await _service.GetAllAsync();
+            return Ok(customers);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Customer>> GetCustomer(Guid id)
         {
-            var item = await _service.GetByIdAsync(id);
-            if (item == null)
+            var customer = await _service.GetByIdAsync(id);
+            if (customer == null)
             {
                 return NotFound();
             }
-            return Ok(item);
+            return Ok(customer);
         }
 
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer(Guid id, Customer customer)
+        public async Task<IActionResult> PutCustomer(Guid id, CustomerRequest customerRequest)
         {
-            var updated = await _service.UpdateAsync(id, customer);
+            var updated = await _service.UpdateAsync(id, customerRequest);
             if (!updated) return NotFound();
-
             return NoContent();
         }
 
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754   
         [HttpPost]
-        public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
+        public async Task<ActionResult<Customer>> PostCustomer(CustomerRequest customerRequest)
         {
-            await _service.AddAsync(customer);
-            return CreatedAtAction(nameof(GetCustomer), new { id = customer.Id }, customer);
+            var createdCustomer = await _service.AddAsync(customerRequest);
+            return CreatedAtAction(nameof(GetCustomer), new { id = createdCustomer.Id }, createdCustomer);
         }
 
         [HttpDelete("{id}")]

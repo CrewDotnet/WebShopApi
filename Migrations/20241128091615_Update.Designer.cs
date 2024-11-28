@@ -12,8 +12,8 @@ using WebShopApi.Data;
 namespace WebShopApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241125214722_UpdateTables")]
-    partial class UpdateTables
+    [Migration("20241128091615_Update")]
+    partial class Update
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,21 @@ namespace WebShopApi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("ClothesItemOrder", b =>
+                {
+                    b.Property<Guid>("ClothesItemsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("OrdersId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ClothesItemsId", "OrdersId");
+
+                    b.HasIndex("OrdersId");
+
+                    b.ToTable("ClothesItemOrder");
+                });
 
             modelBuilder.Entity("WebShopApi.Models.ClothesItem", b =>
                 {
@@ -81,21 +96,6 @@ namespace WebShopApi.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("WebShopApi.Models.JoiningOrderClothesItem", b =>
-                {
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ClothesItemId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("OrderId", "ClothesItemId");
-
-                    b.HasIndex("ClothesItemId");
-
-                    b.ToTable("JoiningOrderClothesItems");
-                });
-
             modelBuilder.Entity("WebShopApi.Models.Order", b =>
                 {
                     b.Property<Guid>("Id")
@@ -104,9 +104,6 @@ namespace WebShopApi.Migrations
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("numeric");
@@ -118,34 +115,30 @@ namespace WebShopApi.Migrations
                     b.ToTable("Orders");
                 });
 
+            modelBuilder.Entity("ClothesItemOrder", b =>
+                {
+                    b.HasOne("WebShopApi.Models.ClothesItem", null)
+                        .WithMany()
+                        .HasForeignKey("ClothesItemsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebShopApi.Models.Order", null)
+                        .WithMany()
+                        .HasForeignKey("OrdersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("WebShopApi.Models.ClothesItem", b =>
                 {
                     b.HasOne("WebShopApi.Models.ClothesType", "ClothesType")
-                        .WithMany()
+                        .WithMany("ClothesItems")
                         .HasForeignKey("ClothesTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ClothesType");
-                });
-
-            modelBuilder.Entity("WebShopApi.Models.JoiningOrderClothesItem", b =>
-                {
-                    b.HasOne("WebShopApi.Models.ClothesItem", "ClothesItem")
-                        .WithMany("OrderClothesItems")
-                        .HasForeignKey("ClothesItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebShopApi.Models.Order", "Order")
-                        .WithMany("OrderClothesItems")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ClothesItem");
-
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("WebShopApi.Models.Order", b =>
@@ -159,19 +152,14 @@ namespace WebShopApi.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("WebShopApi.Models.ClothesItem", b =>
+            modelBuilder.Entity("WebShopApi.Models.ClothesType", b =>
                 {
-                    b.Navigation("OrderClothesItems");
+                    b.Navigation("ClothesItems");
                 });
 
             modelBuilder.Entity("WebShopApi.Models.Customer", b =>
                 {
                     b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("WebShopApi.Models.Order", b =>
-                {
-                    b.Navigation("OrderClothesItems");
                 });
 #pragma warning restore 612, 618
         }

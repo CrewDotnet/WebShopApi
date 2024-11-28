@@ -10,8 +10,8 @@ namespace WebShopApi.Models
         public Guid Id {get; set;} = Guid.NewGuid();
         public string? Name {get; set;}
         public decimal Price {get; set;}
-        public Guid ClothesTypeId {get; set;} = Guid.Empty;
-        public ClothesType ClothesType {get; set;} = null!;
-        public List<JoiningOrderClothesItem> OrderClothesItems {get; set;} = new List<JoiningOrderClothesItem>();
+        public Guid ClothesTypeId {get; set;} = Guid.Empty; //strani kljuc
+        public ClothesType ClothesType {get; set;} = null!; //navigation property - direktan pristup objektu ClothesType iz ClothesItem.
+        public List<Order> Orders { get; set; } = new List<Order>(); // Navigation property for the many-to-many relationship
     }
 }
