@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebShopApi.Models;
+using WebShopApi.Models.RequestModels;
 using WebShopApi.Services;
 
 namespace WebShopApi.Controllers
@@ -23,13 +24,10 @@ namespace WebShopApi.Controllers
         }
         
         [HttpGet]
-        public async Task<ActionResult<ClothesItemsResponse>> GetClothesItems()
+        public async Task<ActionResult<IEnumerable<ClothesItem>>> GetClothesItems()
         {
             var items = await _service.GetAllAsync();
-            var response = new ClothesItemsResponse{
-                ClothesItems = items.ToList()
-            };
-            return Ok(response);
+            return Ok(items);
         }
 
         [HttpGet("{id}")]
@@ -45,9 +43,9 @@ namespace WebShopApi.Controllers
 
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutClothesItem(Guid id, ClothesItem item)
+        public async Task<IActionResult> PutClothesItem(Guid id, ClothesItemRequest itemRequest)
         {
-            var updated = await _service.UpdateAsync(id, item);
+            var updated = await _service.UpdateAsync(id, itemRequest);
             if (!updated) return NotFound();
 
             return NoContent();
@@ -55,10 +53,13 @@ namespace WebShopApi.Controllers
 
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ClothesItem>> PostClothesItem(ClothesItem item)
+        public async Task<ActionResult<ClothesItem>> PostClothesItem(ClothesItemRequest itemRequest)
         {
-            await _service.AddAsync(item);
-            return CreatedAtAction(nameof(GetClothesItem), new { id = item.Id }, item);
+            // ID se automatski generiše u servisu
+            var createdItem = await _service.AddAsync(itemRequest);
+            
+            // Vraća se rezultat sa generisanim ID-jem
+            return CreatedAtAction(nameof(GetClothesItem), new { id = createdItem.Id }, createdItem);
         }
 
         [HttpDelete("{id}")]

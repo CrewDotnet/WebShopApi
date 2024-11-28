@@ -14,6 +14,8 @@ builder.Services.AddControllers();
 // builder.Services.AddDbContext<ClothesContext>(opt =>
 //     opt.UseInMemoryDatabase("ClothesList"));
 
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("WebApiDatabase")));
 
