@@ -7,6 +7,7 @@ namespace WebShopApi.Models.RequestModels
 {
     public class OrderRequest
     {
-        
+        public decimal TotalPrice {get; set;}
+        public Guid CustomerId {get;set;} //strani kljuc
     }
 }

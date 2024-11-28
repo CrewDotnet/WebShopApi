@@ -17,17 +17,19 @@ private readonly DataContext _context;
             _context = context;
         }
 
-        public async Task<IEnumerable<Order>> GetAllAsync() =>
-            await _context.Orders
-                .Include(o => o.OrderClothesItems)
-                .ThenInclude(oi => oi.ClothesItem)
+        public async Task<IEnumerable<Order>> GetAllAsync()
+        {
+            return await _context.Orders
+                .Include(o => o.Customer) // Load related customer data
                 .ToListAsync();
+        }
 
-        public async Task<Order?> GetByIdAsync(Guid id) =>
-            await _context.Orders
-                .Include(o => o.OrderClothesItems)
-                .ThenInclude(oi => oi.ClothesItem)
+        public async Task<Order?> GetByIdAsync(Guid id)
+        {
+            return await _context.Orders
+                .Include(o => o.Customer) // Load related customer data
                 .FirstOrDefaultAsync(o => o.Id == id);
+        }
 
         public async Task AddAsync(Order order)
         {
@@ -44,9 +46,12 @@ private readonly DataContext _context;
         public async Task<bool> DeleteAsync(Guid id)
         {
             var order = await _context.Orders.FindAsync(id);
-            if (order == null) return false;
+            if (order == null)
+                return false;
+
             _context.Orders.Remove(order);
-            return await _context.SaveChangesAsync() > 0;
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
