@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using WebShopApi.Models;
+using WebShopApi.Models.RequestModels;
 using WebShopApi.Repositories;
 
 namespace WebShopApi.Services
@@ -10,29 +12,37 @@ namespace WebShopApi.Services
     public class TypesService : ITypesService
     {
         private readonly ITypesRepository _repository;
+        private readonly IMapper _mapper;
 
-        public TypesService (ITypesRepository repository)
+        public TypesService (ITypesRepository repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ClothesType>> GetAllAsync()
+        public async Task<IEnumerable<ClothesTypesResponse>> GetAllAsync()
         {
-            return await _repository.GetAllAsync();
+            var items = await _repository.GetAllAsync();
+            return _mapper.Map<IEnumerable<ClothesTypesResponse>>(items);
         }
 
-        public async Task<ClothesType?> GetByIdAsync(Guid id)
+        public async Task<ClothesTypesResponse?> GetByIdAsync(Guid id)
         {
-            return await _repository.GetByIdAsync(id);
+            var item = await _repository.GetByIdAsync(id);
+            return _mapper.Map<ClothesTypesResponse?>(item);
         }
 
-        public async Task AddAsync(ClothesType type)
+        public async Task<ClothesType> AddAsync(ClothesTypeRequest typeRequest)
         {
+            var type = _mapper.Map<ClothesType>(typeRequest);
+            type.Id = Guid.NewGuid(); 
             await _repository.AddAsync(type);
+            return type;
         }
 
-        public async Task<bool> UpdateAsync(Guid id, ClothesType type)
+        public async Task<bool> UpdateAsync(Guid id, ClothesTypeRequest typeRequest)
         {
+            var type = _mapper.Map<ClothesType>(typeRequest);
             type.Id = id;
             return await _repository.UpdateAsync(type);
         }
