@@ -11,24 +11,26 @@ namespace WebShopApi.Services
 {
     public class OrderService : IOrderService
     {
-        private readonly IOrderRepository _repository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IClothesRepository _itemRepository;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository repository, IMapper mapper)
+        public OrderService(IOrderRepository repository, IMapper mapper, IClothesRepository itemRepository)
         {
-            _repository = repository;
+            _orderRepository = repository;
             _mapper = mapper;
+            _itemRepository = itemRepository;
         }
 
         public async Task<IEnumerable<OrderResponse>> GetAllAsync()
         {
-            var items = await _repository.GetAllAsync();
+            var items = await _orderRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<OrderResponse>>(items);
         }
 
         public async Task<OrderResponse?> GetByIdAsync(Guid id)
         {
-            var item = await _repository.GetByIdAsync(id);
+            var item = await _orderRepository.GetByIdAsync(id);
             return _mapper.Map<OrderResponse?>(item);
         }
 
@@ -36,7 +38,14 @@ namespace WebShopApi.Services
         {
             var order = _mapper.Map<Order>(orderRequest);
             order.Id = Guid.NewGuid(); // Automatically generate ID
-            await _repository.AddAsync(order);
+
+            foreach (var clothesItemId in orderRequest.ClothesItemsId)
+            {
+                var clothesItem = await _itemRepository.GetByIdAsync(clothesItemId);
+                order.ClothesItems.Add(clothesItem);
+            }
+
+            await _orderRepository.AddAsync(order);
             return order;
         }
 
@@ -44,12 +53,12 @@ namespace WebShopApi.Services
         {
             var order = _mapper.Map<Order>(orderRequest);
             order.Id = id; // Assign the existing ID for update
-            return await _repository.UpdateAsync(order);
+            return await _orderRepository.UpdateAsync(order);
         }
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            return await _repository.DeleteAsync(id);
+            return await _orderRepository.DeleteAsync(id);
         }
     }
 }
