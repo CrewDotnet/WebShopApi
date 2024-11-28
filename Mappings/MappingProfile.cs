@@ -12,7 +12,18 @@ namespace WebShopApi.Mappings
     {
         public MappingProfile()
         {
+            // Mapping for ClothesItem
             CreateMap<ClothesItemRequest, ClothesItem>();
+
+            // Mapping for ClothesType
+            CreateMap<ClothesTypeRequest, ClothesType>();
+
+            // Mapping for Customer
+            CreateMap<CustomerRequest, Customer>();
+
+            // Mapping for Order
+            CreateMap<OrderRequest, Order>()
+                .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.Now)); // Set current date automatically
         }
     }
 }

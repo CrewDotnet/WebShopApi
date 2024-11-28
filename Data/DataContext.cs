@@ -43,6 +43,11 @@ namespace WebShopApi.Data
                 .WithMany(c => c.Orders)
                 .HasForeignKey(o => o.CustomerId)
                 .OnDelete(DeleteBehavior.SetNull); // If customer is deleted, keep the orders but set null for CustomerId
+
+            // Many-to-many relationship between Order and ClothesItem
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.ClothesItems)
+                .WithMany(ci => ci.Orders);
         }
 
     }

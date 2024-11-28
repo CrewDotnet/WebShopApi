@@ -11,6 +11,7 @@ namespace WebShopApi.Models
         public DateTime OrderDate {get; set;} = DateTime.Today;
         public decimal TotalPrice {get; set;}
         public Guid CustomerId {get;set;} //strani kljuc
-        public Customer? Customer {get;set;} // avigation property - direktan pristup objektu Customer iz Ordera.
+        public Customer? Customer {get;set;} // navigation property - direktan pristup objektu Customer iz Ordera.
+        public List<ClothesItem> ClothesItems { get; set; } = new List<ClothesItem>(); // Navigation property for the many-to-many relationship
     }
 }

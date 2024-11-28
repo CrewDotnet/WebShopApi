@@ -9,5 +9,6 @@ namespace WebShopApi.Models.RequestModels
     {
         public decimal TotalPrice {get; set;}
         public Guid CustomerId {get;set;} //strani kljuc
+        public Guid ClothesItemId { get; set; }
     }
 }

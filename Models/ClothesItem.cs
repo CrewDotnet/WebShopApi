@@ -12,5 +12,6 @@ namespace WebShopApi.Models
         public decimal Price {get; set;}
         public Guid ClothesTypeId {get; set;} = Guid.Empty; //strani kljuc
         public ClothesType ClothesType {get; set;} = null!; //navigation property - direktan pristup objektu ClothesType iz ClothesItem.
+        public List<Order> Orders { get; set; } = new List<Order>(); // Navigation property for the many-to-many relationship
     }
 }
