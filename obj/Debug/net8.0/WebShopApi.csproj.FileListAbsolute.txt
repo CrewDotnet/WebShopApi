@@ -557,3 +557,5 @@
 /Users/ivana.korpak/WebAPI/WebShopApiGit/WebShopApi/obj/Debug/net8.0/WebShopApi.pdb
 /Users/ivana.korpak/WebAPI/WebShopApiGit/WebShopApi/obj/Debug/net8.0/WebShopApi.genruntimeconfig.cache
 /Users/ivana.korpak/WebAPI/WebShopApiGit/WebShopApi/obj/Debug/net8.0/ref/WebShopApi.dll
+/Users/ivana.korpak/WebAPI/WebShopApiGit/WebShopApi/bin/Debug/net8.0/AutoMapper.dll
+/Users/ivana.korpak/WebAPI/WebShopApiGit/WebShopApi/bin/Debug/net8.0/AutoMapper.Extensions.Microsoft.DependencyInjection.dll

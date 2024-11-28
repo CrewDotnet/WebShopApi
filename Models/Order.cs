@@ -8,7 +8,6 @@ namespace WebShopApi.Models
     public class Order
     {
         public Guid Id {get; set;} = Guid.NewGuid();
-        public DateTime OrderDate {get; set;} = DateTime.Today;
         public decimal TotalPrice {get; set;}
         public Guid CustomerId {get;set;} //strani kljuc
         public Customer? Customer {get;set;} // navigation property - direktan pristup objektu Customer iz Ordera.

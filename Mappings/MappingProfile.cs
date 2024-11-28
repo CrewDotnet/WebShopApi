@@ -22,8 +22,7 @@ namespace WebShopApi.Mappings
             CreateMap<CustomerRequest, Customer>();
 
             // Mapping for Order
-            CreateMap<OrderRequest, Order>()
-                .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.Now)); // Set current date automatically
+            CreateMap<OrderRequest, Order>();
         }
     }
 }

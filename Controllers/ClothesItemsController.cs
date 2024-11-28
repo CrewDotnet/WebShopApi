@@ -12,7 +12,7 @@ using WebShopApi.Services;
 
 namespace WebShopApi.Controllers
 {
-    [Route("api/")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ClothesItemsController : ControllerBase
     {

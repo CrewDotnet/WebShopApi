@@ -36,7 +36,6 @@ namespace WebShopApi.Services
         {
             var order = _mapper.Map<Order>(orderRequest);
             order.Id = Guid.NewGuid(); // Automatically generate ID
-            order.OrderDate = DateTime.Today; // Set current date
             await _repository.AddAsync(order);
             return order;
         }
@@ -45,7 +44,6 @@ namespace WebShopApi.Services
         {
             var order = _mapper.Map<Order>(orderRequest);
             order.Id = id; // Assign the existing ID for update
-            order.OrderDate = DateTime.Today; // Ensure the date is set
             return await _repository.UpdateAsync(order);
         }
 
