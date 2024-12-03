@@ -12,17 +12,17 @@ namespace WebShopApi.Mappings
     {
         public MappingProfile()
         {
-            // Mapping for ClothesItem
+            // Mapping from Request models to Domain models
             CreateMap<ClothesItemRequest, ClothesItem>();
-
-            // Mapping for ClothesType
             CreateMap<ClothesTypeRequest, ClothesType>();
-
-            // Mapping for Customer
             CreateMap<CustomerRequest, Customer>();
-
-            // Mapping for Order
             CreateMap<OrderRequest, Order>();
+
+            // Mapping from Domain models to Response models
+            CreateMap<ClothesItem, ClothesItemsResponse>();
+            CreateMap<ClothesType, ClothesTypesResponse>();
+            CreateMap<Customer, CustomerResponse>();
+            CreateMap<Order, OrderResponse>();
         }
     }
 }
