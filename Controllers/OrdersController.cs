@@ -21,14 +21,14 @@ namespace WebShopApi.Controllers
         }
         
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        public async Task<ActionResult<IEnumerable<OrderRequest>>> GetOrders()
         {
             var orders = await _service.GetAllAsync();
             return Ok(orders);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrder(Guid id)
+        public async Task<ActionResult<OrderRequest>> GetOrder(Guid id)
         {
             var order = await _service.GetByIdAsync(id);
             if (order == null)
