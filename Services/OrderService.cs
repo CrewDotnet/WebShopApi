@@ -45,6 +45,9 @@ namespace WebShopApi.Services
                 order.ClothesItems.Add(clothesItem);
             }
 
+            // Ručno izračunaj i postavi TotalPrice
+            order.TotalPrice = order.ClothesItems.Sum(item => item.Price);
+
             await _orderRepository.AddAsync(order);
             return order;
         }
