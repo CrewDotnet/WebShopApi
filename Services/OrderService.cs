@@ -13,13 +13,15 @@ namespace WebShopApi.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IClothesRepository _itemRepository;
+        private readonly ICustomerRepository _customerRepository;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository repository, IMapper mapper, IClothesRepository itemRepository)
+        public OrderService(IOrderRepository repository, IMapper mapper, IClothesRepository itemRepository, ICustomerRepository customerRepository)
         {
             _orderRepository = repository;
             _mapper = mapper;
             _itemRepository = itemRepository;
+            _customerRepository = customerRepository;
         }
 
         public async Task<IEnumerable<OrderResponse>> GetAllAsync()
@@ -47,6 +49,27 @@ namespace WebShopApi.Services
 
             // Ručno izračunaj i postavi TotalPrice
             order.TotalPrice = order.ClothesItems.Sum(item => item.Price);
+
+            var customer = await _customerRepository.GetByIdAsync(order.CustomerId);
+            if (customer != null)
+            {
+                if (customer.HasDiscount)
+                {
+                    order.TotalPrice -= 1000; 
+                    customer.HasDiscount = false; 
+                }
+
+                customer.OrdersCount++;
+
+                if (customer.OrdersCount == 3)
+                {
+                    customer.HasDiscount = true; 
+                    customer.OrdersCount = 0;  
+                }
+
+                customer.TotalSpent += order.TotalPrice;
+                await _customerRepository.UpdateAsync(customer);
+            }
 
             await _orderRepository.AddAsync(order);
             return order;
